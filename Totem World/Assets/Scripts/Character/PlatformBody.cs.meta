@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: db73b058a6f40f8429db319865239ed5
+timeCreated: 1532324469
+licenseType: Pro
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - capsuleCollider: {instanceID: 0}
+  - graphics: {instanceID: 0}
+  - raycastSettings: {fileID: 11400000, guid: fdfe48ca465de4142be7053de8b9ba1e, type: 2}
+  - collisionSettings: {fileID: 11400000, guid: 296226e3e19bbb846b1b034a10966088,
+      type: 2}
+  - drag: {fileID: 11400000, guid: f0654966523694a409dd761696ca072f, type: 2}
+  - friction: {fileID: 11400000, guid: 3ee8c815b7402b848a56e99959091800, type: 2}
+  - groundImOn: {instanceID: 0}
+  - wallImAgainst: {instanceID: 0}
+  executionOrder: 400
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
