@@ -10,6 +10,8 @@
 /Totem World/[Ll]ogs/
 /Totem World/[Mm]emoryCaptures/
 
+*.idea/
+
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/Totem World/[Aa]ssets/**/*.meta
 
