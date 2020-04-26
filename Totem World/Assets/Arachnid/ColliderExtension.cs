@@ -27,24 +27,24 @@ public static class ColliderExtension
     public static Vector2 Left(this CapsuleCollider2D collider)
     {
         Vector2 localPoint = new Vector2(-collider.size.x/2, 0);
-        return collider.transform.TransformPoint(localPoint);
+        return collider.transform.TransformPoint(localPoint + collider.offset);
     }
     
     public static Vector2 Right(this CapsuleCollider2D collider)
     {
         Vector2 localPoint = new Vector2(collider.size.x/2, 0);
-        return collider.transform.TransformPoint(localPoint);
+        return collider.transform.TransformPoint(localPoint + collider.offset);
     }
     
     public static Vector2 Top(this CapsuleCollider2D collider)
     {
         Vector2 localPoint = new Vector2(0, collider.size.y /2);
-        return collider.transform.TransformPoint(localPoint);
+        return collider.transform.TransformPoint(localPoint + collider.offset);
     }
     
     public static Vector2 Bottom(this CapsuleCollider2D collider)
     {
         Vector2 localPoint = new Vector2(0, -collider.size.y /2);
-        return collider.transform.TransformPoint(localPoint);
+        return collider.transform.TransformPoint(localPoint + collider.offset);
     }
 }
