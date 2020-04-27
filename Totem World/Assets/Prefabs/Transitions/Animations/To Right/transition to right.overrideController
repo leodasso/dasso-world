@@ -1,0 +1,14 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: transition to right
+  m_Controller: {fileID: 9100000, guid: 620a8724400a78b40928a83424a216ef, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 9d8a59c9fe5e04f4ab8303231736d158, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a7d31ea3f9b26d34aa28fdce6ba701a4, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: d6cdcb1516f878c4e9452230b2ac34e8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 469934e63a2fc1a47a5d12748791031e, type: 2}
