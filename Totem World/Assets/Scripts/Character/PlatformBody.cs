@@ -14,17 +14,18 @@ public class PlatformBody : MonoBehaviour
 		Left, Right
 	}
 	
+	[Tooltip("The dimensions of this capsule collider are used for collision.")]
 	public CapsuleCollider2D capsuleCollider;
-	public GameObject graphics;
 	
 	[Space]
 	public RaycastSettings raycastSettings;
 	public PlatformBodyCollisionSettings collisionSettings;
+
 	[Tooltip("Resistance to movement while in the air")]
-	public CurveObject drag;
-	
+	public float drag = 2;
+
 	[Tooltip("Resistance to movement on the ground")]
-	public CurveObject friction;
+	public float friction = 5;
 	
 	public float groundPenetration;
 	
@@ -38,17 +39,8 @@ public class PlatformBody : MonoBehaviour
 	[ShowIf("useGravity"), HorizontalGroup("Gravity"), HideLabel]
 	public Vector2 gravity;
 	
-	[ToggleLeft, BoxGroup("Rotation")]
-	public bool limitRotation = true;
-	
-	[HorizontalGroup("Rotation/rot", Title = "Rotation"), LabelText("Max"), LabelWidth(80), ShowIf("limitRotation")]
-	public float maxRotationAngle = 30;
-
 	[HorizontalGroup("Rotation/rot"), ReadOnly, LabelText("Current"), LabelWidth(80)]
 	public float groundRotation;
-
-	[BoxGroup("Rotation")]
-	public float rotationSpeed;
 	
 	[ReadOnly]
 	public Vector2 velocity;
@@ -67,9 +59,11 @@ public class PlatformBody : MonoBehaviour
 	
 	Vector2 _thisFrameTranslation;
 
+	[ReadOnly, ToggleLeft]
+	public bool frictionEnabled = true;
+
 	public bool AbilitiesDisabled => _abilityDisabledTimer > 0;
 	public bool Grounded => groundImOn != null;
-	public float CurrentFriction => friction.ValueFor(RelativeVelocity.x);
 	public Vector2 GroundNormal => _groundHitNormal;
 
 	[ToggleLeft, ReadOnly]
@@ -132,7 +126,6 @@ public class PlatformBody : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		if (graphics) _initGraphicScale = graphics.transform.localScale;
 	}
 	
 	// Update is called once per frame
@@ -162,11 +155,6 @@ public class PlatformBody : MonoBehaviour
 		ProcessGroundNormal();
 
 		transform.Translate(_thisFrameTranslation, Space.World);
-
-		float rotation = groundRotation;
-		if (limitRotation)
-			rotation = Mathf.Clamp(groundRotation, -maxRotationAngle, maxRotationAngle);
-		transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, rotation), Time.deltaTime * rotationSpeed);
 	}
 
 	public void DisableAbilitiesForTime(float time)
@@ -177,19 +165,19 @@ public class PlatformBody : MonoBehaviour
 	public void SetFacingDirection(FacingDirection newDirection)
 	{
 		if (newDirection == facingDirection) return;
-		if (!graphics) return;
 		facingDirection = newDirection;
-
-		Vector2 scale = _initGraphicScale;
-		if (newDirection == FacingDirection.Left) scale = new Vector2(-_initGraphicScale.x, _initGraphicScale.y);
-
-		graphics.transform.localScale = scale;
 	}
 
 	public void AddRelativeVelocity(Vector2 newVelocity)
 	{
 		Vector2 finalVel = transform.TransformDirection(newVelocity);
 		velocity += finalVel;
+	}
+
+	public void ClampVelocityX(float max)
+	{
+		float clampedSpeed = Mathf.Clamp(velocity.x, -max, max);
+		velocity = new Vector2(clampedSpeed, velocity.y);
 	}
 	
 
@@ -208,15 +196,15 @@ public class PlatformBody : MonoBehaviour
 	
 	void ProcessDrag()
 	{
-		if (!drag || Grounded) return;
-		velocity = Vector2.Lerp(velocity, Vector2.zero, drag.ValueFor(velocity.magnitude) * Time.deltaTime);
+		if (Grounded) return;
+		velocity = Vector2.Lerp(velocity, Vector2.zero, drag * Time.deltaTime);
 	}
 
 	void ProcessFriction()
 	{
-		if (!Grounded || !friction) return;
+		if (!Grounded || !frictionEnabled) return;
 		
-		velocity = Vector2.Lerp(velocity, Vector2.zero, CurrentFriction * Time.deltaTime);
+		velocity = Vector2.Lerp(velocity, Vector2.zero, friction * Time.deltaTime);
 	}
 
 	void ProcessGravity()

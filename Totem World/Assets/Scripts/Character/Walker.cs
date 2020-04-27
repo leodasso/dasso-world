@@ -10,6 +10,9 @@ public class Walker : PlatformBodyActor
 
 	[ToggleLeft, Tooltip("Sets the graphic to face left or right depending on the input")]
 	public bool setFacingDirection = true;
+
+	[ToggleLeft]
+	public bool disableFrictionWhenWalking;
 	
 	[Range(-1, 1)]
 	public float walkInput;
@@ -24,29 +27,28 @@ public class Walker : PlatformBodyActor
 	{
 		base.ActorUpdate();
 		if (Mathf.Abs(walkInput) > 0.01f)
-			_platformBody.SetFacingDirection( walkInput > 0 ? PlatformBody.FacingDirection.Right : PlatformBody.FacingDirection.Left);
-		
+		{
+			_platformBody.SetFacingDirection(walkInput > 0
+				? PlatformBody.FacingDirection.Right
+				: PlatformBody.FacingDirection.Left);
+
+			if (disableFrictionWhenWalking)
+				_platformBody.frictionEnabled = false;
+		}
+		else _platformBody.frictionEnabled = true;
+
 		if (_platformBody.Grounded)
 		{
-			_speedThisFrame = acceleration.Value * _platformBody.CurrentFriction * walkInput * Time.deltaTime * Vector2.right;
-			_platformBody.AddRelativeVelocity(ClampedSpeed(_speedThisFrame));
+			_speedThisFrame = acceleration.Value * walkInput * Time.deltaTime * Vector2.right;
+			_platformBody.AddRelativeVelocity(_speedThisFrame);
+			_platformBody.ClampVelocityX(maxSpeed.Value);
 		}
 
 		else if (allowAirMovement)
 		{
 			_speedThisFrame = airAcceleration.Value * walkInput * Time.deltaTime * Vector2.right;
-			_platformBody.velocity += ClampedSpeed(_speedThisFrame);
+			_platformBody.velocity += _speedThisFrame;
+			_platformBody.ClampVelocityX(maxSpeed.Value);
 		}
-	}
-
-	
-	/// <summary>
-	/// Returns a speed clamped so that when added to the platform body, it will stay within max speed
-	/// </summary>
-	Vector2 ClampedSpeed(Vector2 inputSpeed)
-	{
-		float currentVelocity = Mathf.Abs(_platformBody.RelativeVelocity.x);
-		float allowedVelocty = maxSpeed.Value - currentVelocity;
-		return Vector2.ClampMagnitude(inputSpeed, allowedVelocty);
 	}
 }
