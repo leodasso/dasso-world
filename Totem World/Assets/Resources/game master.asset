@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a61ec13d47c7de42800777043bda07c, type: 3}
+  m_Name: game master
+  m_EditorClassIdentifier: 
+  playerPrefab:
+    prefab: {fileID: 8107497912034493677, guid: 3c5d9c460d4d55d449e012189005c628,
+      type: 3}
+    dontDestroyOnLoad: 0
+  rewiredInputPrefab:
+    prefab: {fileID: 4280578504836287449, guid: a63892c55fa3c3c44b4d6ef5a870664b,
+      type: 3}
+    dontDestroyOnLoad: 0
+  players: {fileID: 11400000, guid: 71f483f6a83120348a64a88967e8fed8, type: 2}
+  transitionToGameOver: {fileID: 114337766029558398, guid: 46c02aba8d3651f4a8e97941452b4896,
+    type: 3}
+  playerSpawnPoints: {fileID: 11400000, guid: d32f7ec7d2866d54a9e78ec8d8037f7a, type: 2}
+  onStageLoaded:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: b65adaefba6ccee4f81014c734fa1f40, type: 2}
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  startingStage: {fileID: 11400000, guid: 365367bb446514f4faca65076c247465, type: 2}
+  currentStage: {fileID: 0}
