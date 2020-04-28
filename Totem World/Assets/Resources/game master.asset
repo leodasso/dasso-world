@@ -23,6 +23,8 @@ MonoBehaviour:
   players: {fileID: 11400000, guid: 71f483f6a83120348a64a88967e8fed8, type: 2}
   transitionToGameOver: {fileID: 114337766029558398, guid: 46c02aba8d3651f4a8e97941452b4896,
     type: 3}
+  defaultTransition: {fileID: 114337766029558398, guid: 46c02aba8d3651f4a8e97941452b4896,
+    type: 3}
   playerSpawnPoints: {fileID: 11400000, guid: d32f7ec7d2866d54a9e78ec8d8037f7a, type: 2}
   onStageLoaded:
     m_PersistentCalls:
@@ -39,4 +41,4 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   startingStage: {fileID: 11400000, guid: 9a3becbff37858342af5647e7eac2f02, type: 2}
-  currentStage: {fileID: 0}
+  currentStage: {fileID: 11400000, guid: 365367bb446514f4faca65076c247465, type: 2}

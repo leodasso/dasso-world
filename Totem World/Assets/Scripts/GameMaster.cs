@@ -23,6 +23,9 @@ public class GameMaster : ScriptableObject
     [TabGroup("main", "Prefabs"), AssetList(Path = "Prefabs/Transitions")]
     public Transition transitionToGameOver;
     
+    [TabGroup("main", "Prefabs"), AssetList(Path = "Prefabs/Transitions")]
+    public Transition defaultTransition;
+    
     [TabGroup("main", "Prefabs")]
     public Collection playerSpawnPoints;
 
@@ -56,10 +59,17 @@ public class GameMaster : ScriptableObject
     }
     
     
-    IEnumerator LoadNextStage(Stage stage, float loadDelay)
+    IEnumerator LoadNextStage(Stage stage, float loadDelay, Transition newTransition = null)
     {
         yield return new WaitForSecondsRealtime(loadDelay);
+
+        var transition = newTransition ? newTransition : defaultTransition;
+
+        Instantiate(transition);
+        Debug.Log("Waiting for " + transition.duration + " seconds before loading. Time: " + Time.unscaledTime);
+        yield return new WaitForSecondsRealtime(transition.duration);
         
+        Debug.Log("Transition complete. Time: " + Time.unscaledTime);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(stage.sceneName);
         while (!asyncLoad.isDone)
             yield return null;
@@ -68,20 +78,15 @@ public class GameMaster : ScriptableObject
         
         onStageLoaded.Invoke();
     }
-
-    IEnumerator ReloadGame(float delay)
-    {
-        yield return new WaitForSecondsRealtime(delay);
-        Instantiate(transitionToGameOver);
-        yield return new WaitForSecondsRealtime(transitionToGameOver.duration);
-        BeginGame();
-    }
-
+    
     public static void LoadStage(Stage stage, float loadDelay)
     {        
         Get().currentStage = stage;
         CoroutineHelper.NewCoroutine(Get().LoadNextStage(stage, loadDelay));
     }
+    
+
+
 
     [Button()]
     public void BeginGame()
@@ -93,6 +98,13 @@ public class GameMaster : ScriptableObject
     {
         CoroutineHelper.NewCoroutine(ReloadGame(2));
     }
+    
+    IEnumerator ReloadGame(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        BeginGame();
+    }
+    
 
     /// <summary>
     /// Returns the rewired input player

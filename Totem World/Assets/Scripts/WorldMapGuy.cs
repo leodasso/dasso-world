@@ -27,5 +27,14 @@ public class WorldMapGuy : MonoBehaviour
         _playerInput = new Vector2(_player.GetAxis("moveH"), _player.GetAxis("moveV"));
         
         if (!_currentStagePoint) return;
+        
+        if (_player.GetButtonDown("alpha") || _player.GetButtonDown("jump"))
+            TryEnterStage();
+    }
+
+    void TryEnterStage()
+    {
+        if (!_currentStagePoint || !_currentStagePoint.stage) return;
+        GameMaster.LoadStage(_currentStagePoint.stage, .1f);
     }
 }
