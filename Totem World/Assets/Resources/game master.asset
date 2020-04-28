@@ -38,7 +38,5 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  startingStage: {fileID: 11400000, guid: 365367bb446514f4faca65076c247465, type: 2}
+  startingStage: {fileID: 11400000, guid: 9a3becbff37858342af5647e7eac2f02, type: 2}
   currentStage: {fileID: 0}

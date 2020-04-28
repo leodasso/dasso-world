@@ -86,8 +86,7 @@ public class GameMaster : ScriptableObject
     [Button()]
     public void BeginGame()
     {
-        currentStage = startingStage;
-        onStageLoaded.Invoke();
+        LoadStage(startingStage, 0.1f);
     }
 
     public void ReloadGame()
