@@ -20,13 +20,7 @@ public class StackableActor : PlatformBodyActor, IStackable
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(Top(), .05f );
     }
-
-    protected override void Update()
-    {
-        base.Update();
-
-
-    }
+    
 
     void LateUpdate()
     {
