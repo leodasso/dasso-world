@@ -25,6 +25,11 @@ public class StackableActor : PlatformBodyActor, IStackable
     {
         base.Update();
 
+
+    }
+
+    void LateUpdate()
+    {
         if (belowMe != null)
         {
             transform.position = belowMe.Top();
