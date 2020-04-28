@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-[CreateAssetMenu(menuName = "HacknodE/Raycast Settings")]
+[CreateAssetMenu(menuName = "Totem/Raycast Settings")]
 public class RaycastSettings : ScriptableObject 
 {
     [BoxGroup("Vertical Raycasts"), HideLabel, GUIColor(1, 1, 0)]

@@ -39,9 +39,6 @@ public class PlatformBody : MonoBehaviour
 	[ShowIf("useGravity"), HorizontalGroup("Gravity"), HideLabel]
 	public Vector2 gravity;
 	
-	[HorizontalGroup("Rotation/rot"), ReadOnly, LabelText("Current"), LabelWidth(80)]
-	public float groundRotation;
-	
 	[ReadOnly]
 	public Vector2 velocity;
 
@@ -50,6 +47,9 @@ public class PlatformBody : MonoBehaviour
 
 	[EnumToggleButtons, ReadOnly]
 	public FacingDirection facingDirection = FacingDirection.Right;
+	
+	[ReadOnly, LabelText("Current"), LabelWidth(80)]
+	public float groundRotation;
 
 	[ ReadOnly]
 	public Collider2D groundImOn;
