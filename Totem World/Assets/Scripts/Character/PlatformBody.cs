@@ -27,8 +27,6 @@ public class PlatformBody : MonoBehaviour
 	[Tooltip("Resistance to movement on the ground")]
 	public float friction = 5;
 	
-	public float groundPenetration;
-	
 	[Tooltip("There's a raycast to check for upcoming cliffs in the direction of momement to call event OnEdgeReached. " +
 	         "This value determines how far the drop has to be before it's determined a cliff")]
 	public float minimumCliffHeight = .5f;
@@ -69,7 +67,7 @@ public class PlatformBody : MonoBehaviour
 	[ToggleLeft, ReadOnly]
 	public bool penetratingGround;
 
-	public Action onGrounded;
+	public Action<GameObject> onGrounded;
 	public Action onUngrounded;
 	public Action<RaycastHit2D> onWallHit;
 	/// <summary>
@@ -147,12 +145,12 @@ public class PlatformBody : MonoBehaviour
 		_thisFrameTranslation = velocity * Time.deltaTime + inheritedTranslation;
 		inheritedTranslation = Vector2.zero;
 		
-		ProcessGroundSnapping();
+		//ProcessGroundSnapping();
 		ProcessHorizontalCollision();
-		ProcessRoofCollision();
+		//ProcessRoofCollision();
 		ProcessGroundCollision();
-		CheckForCliffs();
-		ProcessGroundNormal();
+		//CheckForCliffs();
+		//ProcessGroundNormal();
 
 		transform.Translate(_thisFrameTranslation, Space.World);
 	}
@@ -243,13 +241,13 @@ public class PlatformBody : MonoBehaviour
 
 	void ProcessGroundCollision()
 	{
+		// Get left and right start points for raycasting. We'll be casting down from these points 
+		// and intervals in between them. The total amount of rays depends on the raycast settings.
 		Vector2 castingLeft = raycastSettings.verticalCollisions.CastingLeft(capsuleCollider);
 		Vector2 castingRight = raycastSettings.verticalCollisions.CastingRight(capsuleCollider);
-		Vector2 startCasting = RelativeVelocity.x < 0 ? castingLeft: castingRight;
-		Vector2 endCasting = RelativeVelocity.x < 0 ? castingRight : castingLeft;
 		
 		var groundHit = raycastSettings.verticalCollisions.RaycastDirection(
-			-transform.up, startCasting, endCasting, 
+			-transform.up, castingLeft, castingRight, 
 			capsuleCollider.size.y / 2 + Mathf.Abs(RelativeVelocity.y * Time.deltaTime), 
 			collisionSettings.terrain | collisionSettings.oneWayPlatforms, capsuleCollider);
 		
@@ -261,17 +259,22 @@ public class PlatformBody : MonoBehaviour
 			return;
 		}
 		
+		Debug.DrawRay(groundHit.point, Vector3.up, Color.red, .25f);
+		
 		if (groundHit.collider)
 		{
 			bool isOneWayPlatform = LayerIsInLayerMask(groundHit.collider.gameObject.layer, collisionSettings.oneWayPlatforms);
-			float distToCollider = groundHit.distance - capsuleCollider.size.y / 2;
+
+			float hitPosition = groundHit.point.y;
+			float myFeetPosition = capsuleCollider.Bottom().y;
+			float neededPushUp = hitPosition - myFeetPosition;
 			
 			// If the raycast hit a one-way platform, we want to ignore it unless we're falling onto it
 			if (isOneWayPlatform)
-				if (RelativeVelocity.y > .1f || distToCollider < 0) return;
+				if (RelativeVelocity.y > .1f || neededPushUp < 0) return;
 			
-			float yTranslation = Mathf.Clamp(RelativeThisFrameTranslation.y, -distToCollider - groundPenetration, 99);
-			penetratingGround = distToCollider < 0;
+			float yTranslation = Mathf.Clamp(RelativeThisFrameTranslation.y, neededPushUp, 99);
+			penetratingGround = neededPushUp < 0;
 			RelativeThisFrameTranslation = new Vector2(RelativeThisFrameTranslation.x, yTranslation);
 		}
 
@@ -328,7 +331,7 @@ public class PlatformBody : MonoBehaviour
 			raycastSettings.verticalCollisions.CastingRight(capsuleCollider), 
 			capsuleCollider.size.y / 2 + Mathf.Abs(RelativeVelocity.y * Time.deltaTime), 
 			collisionSettings.terrain, capsuleCollider);
-		
+
 		if (!roofHit)return;
 		if (!roofHit.collider) return;
 
@@ -429,7 +432,7 @@ public class PlatformBody : MonoBehaviour
 	{	
 		float yVel = Mathf.Clamp(RelativeVelocity.y, 0, 9999);
 		RelativeVelocity = new Vector2(RelativeVelocity.x, yVel);
-		onGrounded?.Invoke();
+		onGrounded?.Invoke(groundImOn.gameObject);
 	}
 
 	void OnUngrounded()

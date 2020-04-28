@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 8107497912034493666}
   - component: {fileID: 5901730069150694166}
   - component: {fileID: 1831282255529663757}
+  - component: {fileID: 5018337563206842299}
   m_Layer: 9
   m_Name: totem guy
   m_TagString: Untagged
@@ -52,6 +53,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -63,6 +65,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -119,7 +122,6 @@ MonoBehaviour:
   collisionSettings: {fileID: 11400000, guid: 5618cb07af3a6904994de41e00cb9ac8, type: 2}
   drag: 1
   friction: 10
-  groundPenetration: 0
   minimumCliffHeight: 0.5
   useGravity: 1
   gravity: {x: 0, y: -30}
@@ -225,3 +227,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &5018337563206842299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8107497912034493677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9488a8b5d00ea149a6bd6685fb9caed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stack: []

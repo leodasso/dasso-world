@@ -15,26 +15,26 @@ MonoBehaviour:
   verticalCollisions:
     enabled: 1
     rayCount: 5
-    distance: 0.1
-    offset: 0.1
+    distance: 0.01
+    offset: 0
     padding: 0.05
     splay: 0
   horizontalCollisions:
     enabled: 1
     rayCount: 5
-    distance: 0.1
-    offset: 0.1
-    padding: 0.05
+    distance: 0
+    offset: 0.18
+    padding: 0.18
     splay: 0
   normalProbeCasting:
-    enabled: 1
+    enabled: 0
     rayCount: 5
     distance: 0.1
     offset: 0.1
     padding: 0.05
     splay: 0
   groundSnapCasting:
-    enabled: 1
+    enabled: 0
     rayCount: 5
     distance: 0.1
     offset: 0.1

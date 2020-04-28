@@ -35,7 +35,7 @@ public class PlatformBodyActor : MonoBehaviour
 		
 	}
 
-	protected virtual void OnGrounded()
+	protected virtual void OnGrounded(GameObject newGround)
 	{
 		
 	}

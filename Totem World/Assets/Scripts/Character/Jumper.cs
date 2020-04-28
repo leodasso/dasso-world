@@ -65,9 +65,9 @@ public class Jumper : PlatformBodyActor
 		}
 	}
 
-	protected override void OnGrounded()
+	protected override void OnGrounded(GameObject newGround)
 	{
-		base.OnGrounded();
+		base.OnGrounded(newGround);
 		EndJump();
 		ResetJump();
 	}

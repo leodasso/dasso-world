@@ -92,10 +92,7 @@ public class RaycastGroup
     public List<RaycastHit2D> RaycastDirectionAll(Vector2 direction, Vector2 beginCastPoint, Vector2 endCastPoint, 
         float additionalLength, LayerMask layerMask, Collider2D myCollider)
     {
-        Vector2 castPoint = beginCastPoint;
-        float loopProgress = 0;
         List<RaycastHit2D> allHits = new List<RaycastHit2D>();
-        
         Vector2 splayThing = Vector3.Cross(direction, Vector3.forward);
 		
         for (int i = 0; i < rayCount; i++)
@@ -103,8 +100,8 @@ public class RaycastGroup
             Vector2 splayAmount = splay * splayThing * i;
             splayAmount -= splay * splayThing * ((float)rayCount - 1)/ 2;
             
-            loopProgress = i / ( rayCount - 1f);
-            castPoint = Vector2.Lerp(beginCastPoint, endCastPoint, loopProgress);
+            var loopProgress = i / ( rayCount - 1f);
+            var castPoint = Vector2.Lerp(beginCastPoint, endCastPoint, loopProgress);
 
             RaycastHit2D[] hits = new RaycastHit2D[10];
             Vector2 finalDir = (direction + splayAmount).normalized;
@@ -119,6 +116,6 @@ public class RaycastGroup
                 allHits.Add(firstHit);
         }
 
-        return allHits;
+        return allHits.OrderBy(x => x.distance).ToList();
     }
 }
