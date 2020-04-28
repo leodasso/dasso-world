@@ -4,7 +4,7 @@ using Arachnid;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class Jumper : PlatformBodyActor
+public class Jumper : PlatformBodyActor, IControllable
 {
 	public enum JumpType
 	{
@@ -84,7 +84,7 @@ public class Jumper : PlatformBodyActor
 		jumpTime = 0;
 	}
 
-	public void BeginJump()
+	void BeginJump()
 	{
 		if (!CanAct()) return;
 		if (!canJump) return;
@@ -97,8 +97,30 @@ public class Jumper : PlatformBodyActor
 
 	}
 
-	public void EndJump()
+	void EndJump()
 	{
 		jumping = false;
+	}
+
+	public void ApplyLeftStickInput(Vector2 input)
+	{
+	}
+
+	public void JumpPressed()
+	{
+		BeginJump();
+	}
+
+	public void JumpReleased()
+	{
+		EndJump();
+	}
+
+	public void AlphaPressed()
+	{
+	}
+
+	public void AlphaReleased()
+	{
 	}
 }

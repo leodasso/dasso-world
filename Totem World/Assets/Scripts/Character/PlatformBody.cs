@@ -7,7 +7,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 
-public class PlatformBody : MonoBehaviour
+public class PlatformBody : StackBehavior
 {
 	public enum FacingDirection
 	{
@@ -128,7 +128,7 @@ public class PlatformBody : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update ()
-	{
+	{		
 		if (_noGroundingTime > 0)
 			_noGroundingTime -= Time.deltaTime;
 
@@ -138,19 +138,28 @@ public class PlatformBody : MonoBehaviour
 
 	void LateUpdate()
 	{
-		ProcessGravity();
-		ProcessDrag();
-		ProcessFriction();
+		// Note: The order of these functions is important, so even though it's kind of messy to have
+		// multiple 'behavior allowed by stack' checks, it's necessary.
+		if (BehaviorAllowedByStack())
+		{
+			ProcessGravity();
+			ProcessDrag();
+			ProcessFriction();
+		}
+		else velocity = Vector2.zero;
 
 		_thisFrameTranslation = velocity * Time.deltaTime + inheritedTranslation;
 		inheritedTranslation = Vector2.zero;
 		
 		//ProcessGroundSnapping();
 		ProcessHorizontalCollision();
-		//ProcessRoofCollision();
-		ProcessGroundCollision();
-		//CheckForCliffs();
-		//ProcessGroundNormal();
+		ProcessRoofCollision();
+		if (BehaviorAllowedByStack())
+		{
+			ProcessGroundCollision();
+			//CheckForCliffs();
+			//ProcessGroundNormal();
+		}
 
 		transform.Translate(_thisFrameTranslation, Space.World);
 	}

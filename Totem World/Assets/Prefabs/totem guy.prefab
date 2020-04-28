@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 8107497912034493666}
   - component: {fileID: 5901730069150694166}
   - component: {fileID: 1831282255529663757}
-  - component: {fileID: 5018337563206842299}
+  - component: {fileID: 8679217461356828735}
   m_Layer: 9
   m_Name: totem guy
   m_TagString: Untagged
@@ -117,6 +117,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db73b058a6f40f8429db319865239ed5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  top: 0
+  middle: 0
+  bottom: 1
+  single: 1
   capsuleCollider: {fileID: 8107497912034493679}
   raycastSettings: {fileID: 11400000, guid: a1c3ab26b79982646b6b8d8563715ac6, type: 2}
   collisionSettings: {fileID: 11400000, guid: 5618cb07af3a6904994de41e00cb9ac8, type: 2}
@@ -145,21 +149,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501db2bc16e3ef6489afbe5fd03696d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  top: 0
+  middle: 0
+  bottom: 1
+  single: 1
   allowAirMovement: 1
   setFacingDirection: 1
   disableFrictionWhenWalking: 1
   walkInput: 0
   maxSpeed:
     useConstant: 0
-    constantValue: 8
+    constantValue: 6
     valueObject: {fileID: 0}
   acceleration:
     useConstant: 0
-    constantValue: 45
+    constantValue: 100
     valueObject: {fileID: 0}
   airAcceleration:
     useConstant: 0
-    constantValue: 8
+    constantValue: 25
     valueObject: {fileID: 0}
 --- !u!114 &8107497912034493676
 MonoBehaviour:
@@ -173,6 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fe1658ff39a01345be900ab96b21205, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myStackableActor: {fileID: 8679217461356828735}
 --- !u!114 &8107497912034493666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,6 +194,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39301d28c4adbfc4fac498368ee4f424, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  top: 0
+  middle: 0
+  bottom: 1
+  single: 1
   jumpCooldown:
     useConstant: 0
     constantValue: 0
@@ -227,7 +240,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &5018337563206842299
+--- !u!114 &8679217461356828735
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -236,7 +249,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 8107497912034493677}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9488a8b5d00ea149a6bd6685fb9caed, type: 3}
+  m_Script: {fileID: 11500000, guid: 3dc38eabf5d9e6247a122d0284c626d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stack: []
+  top: 1
+  middle: 1
+  bottom: 1
+  single: 1
+  topOffset: {x: 0, y: 0.8}
+  stackPosition: 0
+  OnStackAbove:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8107497912034493676}
+        m_MethodName: RefreshControllablesList
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

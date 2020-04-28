@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 [RequireComponent(typeof(PlatformBody))]
-public class Walker : PlatformBodyActor
+public class Walker : PlatformBodyActor, IControllable
 {
 	[ToggleLeft]
 	public bool allowAirMovement;
@@ -50,5 +50,26 @@ public class Walker : PlatformBodyActor
 			_platformBody.velocity += _speedThisFrame;
 			_platformBody.ClampVelocityX(maxSpeed.Value);
 		}
+	}
+
+	public void ApplyLeftStickInput(Vector2 input)
+	{
+		walkInput = input.x;
+	}
+
+	public void JumpPressed()
+	{
+	}
+
+	public void JumpReleased()
+	{
+	}
+
+	public void AlphaPressed()
+	{
+	}
+
+	public void AlphaReleased()
+	{
 	}
 }

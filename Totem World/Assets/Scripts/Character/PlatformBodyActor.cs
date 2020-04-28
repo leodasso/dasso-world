@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PlatformBody))]
-public class PlatformBodyActor : MonoBehaviour 
+public class PlatformBodyActor : StackBehavior 
 {
 	protected PlatformBody _platformBody;
 
@@ -27,6 +27,7 @@ public class PlatformBodyActor : MonoBehaviour
 	protected virtual void Update()
 	{
 		if (!CanAct()) return;
+		if (!BehaviorAllowedByStack()) return;
 		ActorUpdate();
 	}
 
