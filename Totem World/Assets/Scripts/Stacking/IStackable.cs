@@ -27,5 +27,6 @@ public interface IStackable
     IStackable BottomOfStack();
     GameObject MyGameObject();
 
+    Vector2 DeltaPosition();
     void StackUpdate(IStackable belowMe);
 }

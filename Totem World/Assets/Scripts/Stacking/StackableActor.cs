@@ -10,11 +10,14 @@ public class StackableActor : PlatformBodyActor, IStackable
     public Vector2 topOffset = Vector2.up;
     [Tooltip("Where do I reside within the stack?")]
     public StackPosition stackPosition;
-    
     public IStackable aboveMe;
     public IStackable belowMe;
 
     public UnityEvent OnStackChanged;
+
+    static float unitsPerPixel = 0.1f;
+
+    Vector2 _prevPosition;
 
     void OnDrawGizmos()
     {
@@ -22,22 +25,42 @@ public class StackableActor : PlatformBodyActor, IStackable
         Gizmos.DrawWireSphere(Top(), .05f );
     }
 
+    protected override void Start()
+    {
+        base.Start();
+        _prevPosition = transform.position;
+    }
+
     void LateUpdate()
     {
         // The bottom of the stack always starts the update chain. Then the order of the update 
         // is from bottom to top. Having them update in order is important to prevent jittery movement.
-        if (stackPosition != StackPosition.Bottom) return;
-        
-        StackUpdate(belowMe);
+        if (stackPosition == StackPosition.Bottom) 
+            StackUpdate(belowMe);
+
+        _prevPosition = transform.position;
+    }
+
+    public Vector2 DeltaPosition()
+    {
+        return (Vector2)transform.position - _prevPosition;
     }
 
     public void StackUpdate(IStackable blockBelowMe)
     {
-        if (blockBelowMe != null) 
-            transform.position = blockBelowMe.Top();
+        if (blockBelowMe != null)
+            transform.position = blockBelowMe.Top() + StackOffset();
         
         if (aboveMe != null) 
             aboveMe.StackUpdate(this);
+    }
+
+    public Vector2 StackOffset()
+    {
+        if (belowMe == null) return Vector2.zero;
+        if (belowMe.DeltaPosition().x < -.05f) return Vector2.right * unitsPerPixel;
+        if (belowMe.DeltaPosition().x > .05f) return Vector2.left * unitsPerPixel;
+        return Vector2.zero;
     }
 
     protected override void OnGrounded(GameObject newGround)
