@@ -288,7 +288,8 @@ public class PlatformBody : StackBehavior
 			raycastSettings.normalProbeCasting.CastingLeft(capsuleCollider), 
 			raycastSettings.normalProbeCasting.CastingRight(capsuleCollider), 
 			capsuleCollider.size.y / 2, 
-			collisionSettings.terrain | collisionSettings.oneWayPlatforms, capsuleCollider);
+			collisionSettings.terrain | collisionSettings.oneWayPlatforms, 
+			new List<Collider2D>{capsuleCollider});
 
 		Vector2 avgNormal = AverageNormalOfHits(groundHits);
 		Debug.DrawRay(capsuleCollider.Bottom(), avgNormal, Color.cyan, .2f);
@@ -334,6 +335,22 @@ public class PlatformBody : StackBehavior
 		RelativeThisFrameTranslation = new Vector2(RelativeThisFrameTranslation.x, yTranslation);
 	}
 
+	List<Collider2D> AllMyColliders()
+	{
+		List<Collider2D> colliders = new List<Collider2D>();
+		if (stackable)
+		{
+			foreach (var stackItem in stackable.GetFullStack())
+			{
+				colliders.Add(stackItem.MyGameObject().GetComponent<Collider2D>());
+			}
+
+			return colliders;
+		}
+		
+		colliders.Add(capsuleCollider);
+		return colliders;
+	}
 
 	void ProcessHorizontalCollision()
 	{
@@ -345,7 +362,7 @@ public class PlatformBody : StackBehavior
 			raycastSettings.horizontalCollisions.CastingTop(capsuleCollider), 
 			raycastSettings.horizontalCollisions.CastingBottom(capsuleCollider),
 			(capsuleCollider.size.x / 2) + Mathf.Abs(RelativeVelocity.x) * Time.deltaTime, 
-			collisionSettings.walls | collisionSettings.terrain, capsuleCollider);
+			collisionSettings.walls | collisionSettings.terrain, AllMyColliders());
 
 		if (!wallHit.collider)
 		{

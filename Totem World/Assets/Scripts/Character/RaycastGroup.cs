@@ -81,16 +81,24 @@ public class RaycastGroup
         }
     }
     
+    // Overload for just using a single collider
     public RaycastHit2D RaycastDirection(Vector2 direction, Vector2 beginCastPoint, Vector2 endCastPoint, 
         float additionalLength, LayerMask layerMask, Collider2D myCollider)
     {
+        List<Collider2D> myColliders = new List<Collider2D> {myCollider};
+        return RaycastDirection(direction, beginCastPoint, endCastPoint, additionalLength, layerMask, myColliders);
+    }
+    
+    public RaycastHit2D RaycastDirection(Vector2 direction, Vector2 beginCastPoint, Vector2 endCastPoint, 
+        float additionalLength, LayerMask layerMask, List<Collider2D> myColliders)
+    {
         List<RaycastHit2D> hits =
-            RaycastDirectionAll(direction, beginCastPoint, endCastPoint, additionalLength, layerMask, myCollider);
+            RaycastDirectionAll(direction, beginCastPoint, endCastPoint, additionalLength, layerMask, myColliders);
         return hits.Count < 1 ? new RaycastHit2D() : hits[0];
     }
     
     public List<RaycastHit2D> RaycastDirectionAll(Vector2 direction, Vector2 beginCastPoint, Vector2 endCastPoint, 
-        float additionalLength, LayerMask layerMask, Collider2D myCollider)
+        float additionalLength, LayerMask layerMask, List<Collider2D> myColliders)
     {
         List<RaycastHit2D> allHits = new List<RaycastHit2D>();
         Vector2 splayThing = Vector3.Cross(direction, Vector3.forward);
@@ -107,7 +115,7 @@ public class RaycastGroup
             Vector2 finalDir = (direction + splayAmount).normalized;
             Physics2D.RaycastNonAlloc(castPoint, finalDir, hits, additionalLength + distance, layerMask);
 
-            List<RaycastHit2D> orderedHits = hits.Where(x => x.collider != null && x.collider != myCollider).ToList();
+            List<RaycastHit2D> orderedHits = hits.Where(x => x.collider != null && !myColliders.Contains(x.collider)).ToList();
             
             if (orderedHits.Count < 1) continue;
             orderedHits = orderedHits.OrderBy(x => x.distance).ToList();
