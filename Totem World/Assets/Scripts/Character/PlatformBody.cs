@@ -88,10 +88,9 @@ public class PlatformBody : StackBehavior
 		private set {velocity = transform.TransformDirection(value);}
 	}
 
-	Vector2 RelativeThisFrameTranslation
+	public bool IsAgainstWall()
 	{
-		get { return transform.InverseTransformDirection(_thisFrameTranslation); }
-		set { _thisFrameTranslation = transform.TransformDirection(value); }
+		return wallImAgainst != null;
 	}
 	
 
@@ -157,8 +156,6 @@ public class PlatformBody : StackBehavior
 		_thisFrameTranslation = velocity * Time.deltaTime + inheritedTranslation;
 		inheritedTranslation = Vector2.zero;
 		
-		ProcessHorizontalCollision();
-
 		if (BehaviorAllowedByStack())
 		{
 			ProcessRoofCollision();
@@ -168,6 +165,9 @@ public class PlatformBody : StackBehavior
 		}
 
 		transform.Translate(_thisFrameTranslation, Space.World);
+		
+		if (BehaviorAllowedByStack())
+			ProcessHorizontalCollision();
 	}
 
 	public void DisableAbilitiesForTime(float time)
@@ -263,9 +263,9 @@ public class PlatformBody : StackBehavior
 			if (isOneWayPlatform)
 				if (RelativeVelocity.y > .1f || neededPushUp < 0) return;
 			
-			float yTranslation = Mathf.Clamp(RelativeThisFrameTranslation.y, neededPushUp, 99);
+			float yTranslation = Mathf.Clamp(_thisFrameTranslation.y, neededPushUp, 99);
 			penetratingGround = neededPushUp < 0;
-			RelativeThisFrameTranslation = new Vector2(RelativeThisFrameTranslation.x, yTranslation);
+			_thisFrameTranslation = new Vector2(_thisFrameTranslation.x, yTranslation);
 		}
 
 		if (groundImOn == null && groundHit.collider != null && _noGroundingTime <= 0)
@@ -331,8 +331,8 @@ public class PlatformBody : StackBehavior
 		velocity = new Vector2(velocity.x, yVel);
 		
 		float distToCollider = roofHit.distance - capsuleCollider.size.y / 2;
-		float yTranslation = Mathf.Clamp(RelativeThisFrameTranslation.y, -99, distToCollider);
-		RelativeThisFrameTranslation = new Vector2(RelativeThisFrameTranslation.x, yTranslation);
+		float yTranslation = Mathf.Clamp(_thisFrameTranslation.y, -99, distToCollider);
+		_thisFrameTranslation = new Vector2(_thisFrameTranslation.x, yTranslation);
 	}
 
 	List<Collider2D> AllMyColliders()
@@ -352,39 +352,57 @@ public class PlatformBody : StackBehavior
 		return colliders;
 	}
 
-	void ProcessHorizontalCollision()
+	public void ProcessHorizontalCollision()
 	{
 		if (!raycastSettings.horizontalCollisions.enabled) return;
-		Vector2 movementDir = transform.right;
-		if (RelativeVelocity.x < 0) movementDir = -transform.right;
+
+		float colliderWidth = capsuleCollider.size.x / 2;
 		
-		var wallHit = raycastSettings.horizontalCollisions.RaycastDirection(movementDir, 
-			raycastSettings.horizontalCollisions.CastingTop(capsuleCollider), 
+		var leftWallHit = raycastSettings.horizontalCollisions.RaycastDirection(Vector2.left, 
+			raycastSettings.horizontalCollisions.CastingTop(capsuleCollider) , 
 			raycastSettings.horizontalCollisions.CastingBottom(capsuleCollider),
-			(capsuleCollider.size.x / 2) + Mathf.Abs(RelativeVelocity.x) * Time.deltaTime, 
+			colliderWidth, 
+			collisionSettings.walls | collisionSettings.terrain, AllMyColliders());
+		
+		var rightWallHit = raycastSettings.horizontalCollisions.RaycastDirection(Vector2.right, 
+			raycastSettings.horizontalCollisions.CastingTop(capsuleCollider) , 
+			raycastSettings.horizontalCollisions.CastingBottom(capsuleCollider),
+			colliderWidth, 
 			collisionSettings.walls | collisionSettings.terrain, AllMyColliders());
 
-		if (!wallHit.collider)
+		// If the left side has no hits, assume it's the right side.
+		int direction;
+		RaycastHit2D finalWallHit;
+		if (leftWallHit.collider)
+		{
+			direction = -1;
+			finalWallHit = leftWallHit;
+		}
+		else
+		{
+			direction = 1;
+			finalWallHit = rightWallHit;
+		}
+
+		if (!finalWallHit.collider)
 		{
 			wallImAgainst = null;
 			return;
 		}
 
-		if (!wallImAgainst) OnWallHit(wallHit);
-		wallImAgainst = wallHit.collider;
+		if (!wallImAgainst) OnWallHit(finalWallHit);
+		wallImAgainst = finalWallHit.collider;
 		
 		if (wallImAgainst)
 			velocity = new Vector2(0, velocity.y);
 		
 		float xTranslation = 0;
-		float distToWall = wallHit.distance - capsuleCollider.size.x / 2;
+		float distToWall = finalWallHit.distance - capsuleCollider.size.x / 2;
 
-		float direction = 1;
-		if (RelativeVelocity.x < 0) direction = -1;
 		xTranslation = distToWall < 0 ?
 			distToWall * direction : Mathf.Clamp(xTranslation, -distToWall, distToWall);
 		
-		RelativeThisFrameTranslation = new Vector2(xTranslation, RelativeThisFrameTranslation.y);
+		transform.Translate(new Vector2(xTranslation, 0));
 	}
 
 	bool LayerIsInLayerMask(int layer, LayerMask layerMask)
@@ -451,7 +469,6 @@ public class PlatformBody : StackBehavior
 
 	void OnEdgeReached()
 	{
-		Debug.Log("Edge reached!");
 		onEdgeReached?.Invoke();
 	}
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using Sirenix.OdinInspector;
 
 public class StackableActor : PlatformBodyActor, IStackable
 {
@@ -39,6 +38,10 @@ public class StackableActor : PlatformBodyActor, IStackable
             StackUpdate(belowMe);
 
         _prevPosition = transform.position;
+        
+        // Horizontal collision needs to happen last, so it's called here
+        if (_platformBody)
+            _platformBody.ProcessHorizontalCollision();
     }
 
     public Vector2 DeltaPosition()
