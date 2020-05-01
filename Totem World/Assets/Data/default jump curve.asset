@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a698ec50782dc4f9e2214e0fed3bb5, type: 3}
   m_Name: default jump curve
   m_EditorClassIdentifier: 
-  multiplier: 500
+  multiplier: 1200
   curve:
     serializedVersion: 2
     m_Curve:
