@@ -153,9 +153,10 @@ public class PlatformBody : StackBehavior
 		
 		//ProcessGroundSnapping();
 		ProcessHorizontalCollision();
-		ProcessRoofCollision();
+
 		if (BehaviorAllowedByStack())
 		{
+			ProcessRoofCollision();
 			ProcessGroundCollision();
 			//CheckForCliffs();
 			//ProcessGroundNormal();

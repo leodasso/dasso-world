@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 public class StackableActor : PlatformBodyActor, IStackable
 {
@@ -13,21 +14,30 @@ public class StackableActor : PlatformBodyActor, IStackable
     public IStackable aboveMe;
     public IStackable belowMe;
 
-    public UnityEvent OnStackAbove;
+    public UnityEvent OnStackChanged;
 
     void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(Top(), .05f );
     }
-    
 
     void LateUpdate()
     {
-        if (belowMe != null)
-        {
-            transform.position = belowMe.Top();
-        }
+        // The bottom of the stack always starts the update chain. Then the order of the update 
+        // is from bottom to top. Having them update in order is important to prevent jittery movement.
+        if (stackPosition != StackPosition.Bottom) return;
+        
+        StackUpdate(belowMe);
+    }
+
+    public void StackUpdate(IStackable blockBelowMe)
+    {
+        if (blockBelowMe != null) 
+            transform.position = blockBelowMe.Top();
+        
+        if (aboveMe != null) 
+            aboveMe.StackUpdate(this);
     }
 
     protected override void OnGrounded(GameObject newGround)
@@ -46,7 +56,15 @@ public class StackableActor : PlatformBodyActor, IStackable
         under.GetStacked(this);
         RecalculateStackPosition();
         
-        OnStackAbove.Invoke();
+        StackChanged();
+    }
+
+    public void StackChanged()
+    {
+        if (aboveMe != null) 
+            aboveMe.StackChanged();
+        
+        OnStackChanged.Invoke();
     }
 
     
@@ -91,7 +109,7 @@ public class StackableActor : PlatformBodyActor, IStackable
     public List<IStackable> GetAllBelow()
     {
         if (belowMe == null) return new List<IStackable>();
-        var belowStackables = belowMe.GetAllAbove();
+        var belowStackables = belowMe.GetAllBelow();
         belowStackables.Add(belowMe);
         return belowStackables;
     }
@@ -108,6 +126,14 @@ public class StackableActor : PlatformBodyActor, IStackable
     public Vector2 Top()
     {
         return (Vector2)transform.position + topOffset;
+    }
+
+    [Button]
+    public IStackable BottomOfStack()
+    {
+        var stackBelow = GetAllBelow();
+        if (stackBelow.Count < 1) return this;
+        return stackBelow[0];
     }
 
     public GameObject MyGameObject()

@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
 	/// </summary>
 	public void RefreshControllablesList()
 	{
+		_controllables.Clear();
 		foreach (var stackable in myStackableActor.GetFullStack())
 		{
 			_controllables.AddRange(stackable.MyGameObject().GetComponents<IControllable>());

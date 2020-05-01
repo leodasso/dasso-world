@@ -15,6 +15,7 @@ public interface IStackable
     bool StackingAllowed();
 
     void GetStacked(IStackable newHat);
+    void StackChanged();
 
     StackPosition MyStackPosition();
 
@@ -23,6 +24,8 @@ public interface IStackable
     List<IStackable> GetFullStack();
 
     Vector2 Top();
-
+    IStackable BottomOfStack();
     GameObject MyGameObject();
+
+    void StackUpdate(IStackable belowMe);
 }
