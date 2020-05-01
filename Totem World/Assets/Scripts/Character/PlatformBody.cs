@@ -16,6 +16,9 @@ public class PlatformBody : StackBehavior
 	
 	[Tooltip("The dimensions of this capsule collider are used for collision.")]
 	public CapsuleCollider2D capsuleCollider;
+
+	[Tooltip("If this is going to act as a stack controller, must be linked here")]
+	public StackableActor stackable;
 	
 	[Space]
 	public RaycastSettings raycastSettings;
@@ -75,6 +78,9 @@ public class PlatformBody : StackBehavior
 	/// </summary>
 	public Action<Vector2> onNormalChange;
 	public Action onEdgeReached;
+
+	CapsuleCollider2D ColliderForRoofCollision =>
+		stackable ? stackable.TopOfStack().MyGameObject().GetComponent<CapsuleCollider2D>() : capsuleCollider;
 
 	public Vector2 RelativeVelocity
 	{
@@ -151,7 +157,6 @@ public class PlatformBody : StackBehavior
 		_thisFrameTranslation = velocity * Time.deltaTime + inheritedTranslation;
 		inheritedTranslation = Vector2.zero;
 		
-		//ProcessGroundSnapping();
 		ProcessHorizontalCollision();
 
 		if (BehaviorAllowedByStack())
@@ -223,31 +228,6 @@ public class PlatformBody : StackBehavior
 		velocity += Time.deltaTime * gravity;
 	}
 
-	void ProcessGroundSnapping()
-	{
-		if (!raycastSettings.groundSnapCasting.enabled || !Grounded) return;
-
-		var groundSnapHit = raycastSettings.groundSnapCasting.RaycastDirectionAll(-transform.up, 
-			raycastSettings.groundSnapCasting.CastingLeft(capsuleCollider), 
-			raycastSettings.groundSnapCasting.CastingRight(capsuleCollider),
-			capsuleCollider.size.y / 2 + Mathf.Abs(RelativeVelocity.y * Time.deltaTime),
-			collisionSettings.terrain, capsuleCollider);
-
-		if (groundSnapHit.Count < 1) return;
-
-		// order by distance
-		groundSnapHit = groundSnapHit.OrderBy(x => x.distance).ToList();
-		
-		// choose the hit with the farthest distance - so we dont cause penetration
-		var farthestHit = groundSnapHit.Last();
-		
-		float distToCollider = farthestHit.distance - capsuleCollider.size.y / 2;
-
-		if (distToCollider < 0) return;
-
-		Vector2 vectorToHitPoint = -AverageNormalOfHits(groundSnapHit).normalized * distToCollider;
-		_thisFrameTranslation += vectorToHitPoint;
-	}
 
 	void ProcessGroundCollision()
 	{
@@ -335,12 +315,12 @@ public class PlatformBody : StackBehavior
 	}
 	
 	void ProcessRoofCollision()
-	{
+	{		
 		var roofHit = raycastSettings.verticalCollisions.RaycastDirection(transform.up, 
-			raycastSettings.verticalCollisions.CastingLeft(capsuleCollider), 
-			raycastSettings.verticalCollisions.CastingRight(capsuleCollider), 
-			capsuleCollider.size.y / 2 + Mathf.Abs(RelativeVelocity.y * Time.deltaTime), 
-			collisionSettings.terrain, capsuleCollider);
+			raycastSettings.verticalCollisions.CastingLeft(ColliderForRoofCollision), 
+			raycastSettings.verticalCollisions.CastingRight(ColliderForRoofCollision), 
+			ColliderForRoofCollision.size.y / 2 + Mathf.Abs(RelativeVelocity.y * Time.deltaTime), 
+			collisionSettings.terrain, ColliderForRoofCollision);
 
 		if (!roofHit)return;
 		if (!roofHit.collider) return;

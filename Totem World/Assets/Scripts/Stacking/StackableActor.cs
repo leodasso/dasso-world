@@ -151,12 +151,19 @@ public class StackableActor : PlatformBodyActor, IStackable
         return (Vector2)transform.position + topOffset;
     }
 
-    [Button]
     public IStackable BottomOfStack()
     {
         var stackBelow = GetAllBelow();
         if (stackBelow.Count < 1) return this;
         return stackBelow[0];
+    }
+
+
+    public IStackable TopOfStack()
+    {
+        var stackAbove = GetAllAbove();
+        if (stackAbove.Count < 1) return this;
+        return stackAbove[0];
     }
 
     public GameObject MyGameObject()
