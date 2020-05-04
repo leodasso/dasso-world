@@ -13,6 +13,9 @@ public class RaycastGroup
     
     [HorizontalGroup("a"), LabelWidth(50), ToggleLeft]
     public bool enabled = true;
+
+    [HorizontalGroup("a"), LabelWidth(40), ToggleLeft]
+    public bool gizmos = true;
     
     [HorizontalGroup("a"), LabelWidth(70)]
     public int rayCount = 5;
@@ -20,15 +23,14 @@ public class RaycastGroup
     [HorizontalGroup("a"), LabelWidth(60)]
     public float distance = .1f;
     
+    
+    // TODO change to vec2
     [HorizontalGroup("b"), LabelWidth(60)]
     public float offset = .1f;
     
+    // TODO change to vec2
     [HorizontalGroup("b"), LabelWidth(60)]
     public float padding = .05f;
-
-    [HorizontalGroup("b"), LabelWidth(60)]
-    [Tooltip("Splay the raycasts apart like spread fingers")]
-    public float splay;
 
     public Vector2 CastingLeft(CapsuleCollider2D capsuleCollider)
     {
@@ -49,10 +51,40 @@ public class RaycastGroup
     {
         return capsuleCollider.Bottom() + (offset + padding) * (Vector2) capsuleCollider.transform.up;
     }
+    
+    public Vector2 CastingBottomLeft(CapsuleCollider2D capsuleCollider)
+    {
+        return new Vector2(CastingLeft(capsuleCollider).x, CastingBottom(capsuleCollider).y);
+    }
+    
+    public Vector2 CastingBottomRight(CapsuleCollider2D capsuleCollider)
+    {
+        return new Vector2(CastingRight(capsuleCollider).x, CastingBottom(capsuleCollider).y);
+    }
+    
+    public Vector2 CastingTopLeft(CapsuleCollider2D capsuleCollider)
+    {
+        return new Vector2(CastingLeft(capsuleCollider).x, CastingTop(capsuleCollider).y);
+    }
+    
+    public Vector2 CastingTopRight(CapsuleCollider2D capsuleCollider)
+    {
+        return new Vector2(CastingRight(capsuleCollider).x, CastingTop(capsuleCollider).y);
+    }
+
+    public void DrawCornerGizmos(CapsuleCollider2D collider)
+    {
+        if (!enabled || !gizmos) return;
+        float radius = .1f;
+        Gizmos.DrawWireSphere(CastingTopLeft(collider), radius);
+        Gizmos.DrawWireSphere(CastingTopRight(collider), radius);
+        Gizmos.DrawWireSphere(CastingBottomLeft(collider), radius);
+        Gizmos.DrawWireSphere(CastingBottomRight(collider), radius);
+    }
 
     public void DrawGizmos(Color color, float additionalDistance, CastingDirection castingDirection, Vector2 castingVector, CapsuleCollider2D collider)
     {
-        if (!enabled) return;
+        if (!enabled || !gizmos) return;
         Vector2 startPoiont = castingDirection == CastingDirection.Horizontal?
             CastingTop(collider) : CastingLeft(collider);
 
@@ -66,18 +98,11 @@ public class RaycastGroup
     
     void DrawRaycastGizmos(Vector2 direction, Vector2 beginCastPoint, Vector2 endCastPoint, float rayLength)
     {
-        Vector2 castPoint = beginCastPoint;
-
-        Vector2 splayThing = Vector3.Cross(direction, Vector3.forward);
-
         for (int i = 0; i < rayCount; i++)
         {
-            Vector2 splayAmount = splay * splayThing * i;
-            splayAmount -= splay * splayThing * ((float)rayCount - 1)/ 2;
-            
             var loopProgress = i / ( rayCount - 1f);
-            castPoint = Vector2.Lerp(beginCastPoint, endCastPoint, loopProgress);
-            Gizmos.DrawLine(castPoint, castPoint + (direction + splayAmount).normalized * rayLength);
+            var castPoint = Vector2.Lerp(beginCastPoint, endCastPoint, loopProgress);
+            Gizmos.DrawLine(castPoint, castPoint + direction.normalized * rayLength);
         }
     }
     
@@ -101,19 +126,17 @@ public class RaycastGroup
         float additionalLength, LayerMask layerMask, List<Collider2D> myColliders)
     {
         List<RaycastHit2D> allHits = new List<RaycastHit2D>();
-        Vector2 splayThing = Vector3.Cross(direction, Vector3.forward);
 		
         for (int i = 0; i < rayCount; i++)
-        {
-            Vector2 splayAmount = splay * splayThing * i;
-            splayAmount -= splay * splayThing * ((float)rayCount - 1)/ 2;
-            
+        {           
             var loopProgress = i / ( rayCount - 1f);
             var castPoint = Vector2.Lerp(beginCastPoint, endCastPoint, loopProgress);
 
             RaycastHit2D[] hits = new RaycastHit2D[10];
-            Vector2 finalDir = (direction + splayAmount).normalized;
+            Vector2 finalDir = direction.normalized;
             Physics2D.RaycastNonAlloc(castPoint, finalDir, hits, additionalLength + distance, layerMask);
+            
+            Debug.DrawRay(castPoint, finalDir, Color.cyan, 30);
 
             List<RaycastHit2D> orderedHits = hits.Where(x => x.collider != null && !myColliders.Contains(x.collider)).ToList();
             
