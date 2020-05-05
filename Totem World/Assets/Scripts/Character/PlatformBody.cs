@@ -79,6 +79,8 @@ public class PlatformBody : StackBehavior
 	public Action<Vector2> onNormalChange;
 	public Action onEdgeReached;
 
+	public float _horizontalCollisionRayLength => capsuleCollider.size.x / 2;
+
 	CapsuleCollider2D ColliderForRoofCollision =>
 		stackable ? stackable.TopOfStack().MyGameObject().GetComponent<CapsuleCollider2D>() : capsuleCollider;
 
@@ -106,6 +108,8 @@ public class PlatformBody : StackBehavior
 		if (capsuleCollider == null) capsuleCollider = GetComponent<CapsuleCollider2D>();
 		
 		if (!raycastSettings) return;
+		
+		raycastSettings.horizontalCollisions.DrawCornerGizmos(capsuleCollider);
 
 		raycastSettings.verticalCollisions.DrawGizmos(Color.yellow, capsuleCollider.size.y/2, 
 			RaycastGroup.CastingDirection.Vertical, transform.up, capsuleCollider);
@@ -249,7 +253,7 @@ public class PlatformBody : StackBehavior
 			return;
 		}
 		
-		Debug.DrawRay(groundHit.point, Vector3.up, Color.red, .25f);
+		//Debug.DrawRay(groundHit.point, Vector3.up, Color.red, .25f);
 		
 		if (groundHit.collider)
 		{
@@ -356,35 +360,36 @@ public class PlatformBody : StackBehavior
 	{
 		if (!raycastSettings.horizontalCollisions.enabled) return;
 
+		var settings = raycastSettings.horizontalCollisions;
 		float colliderWidth = capsuleCollider.size.x / 2;
 		
-		var leftWallHit = raycastSettings.horizontalCollisions.RaycastDirection(Vector2.left, 
-			raycastSettings.horizontalCollisions.CastingTop(capsuleCollider) , 
-			raycastSettings.horizontalCollisions.CastingBottom(capsuleCollider),
+		var leftWallHit = settings.RaycastDirection(Vector2.left, 
+			settings.CastingTop(capsuleCollider) , 
+			settings.CastingBottom(capsuleCollider),
 			colliderWidth, 
 			collisionSettings.walls | collisionSettings.terrain, AllMyColliders());
-		
-		var rightWallHit = raycastSettings.horizontalCollisions.RaycastDirection(Vector2.right, 
-			raycastSettings.horizontalCollisions.CastingTop(capsuleCollider) , 
-			raycastSettings.horizontalCollisions.CastingBottom(capsuleCollider),
+			
+		var rightWallHit = settings.RaycastDirection(Vector2.right, 
+			settings.CastingTop(capsuleCollider) , 
+			settings.CastingBottom(capsuleCollider),
 			colliderWidth, 
 			collisionSettings.walls | collisionSettings.terrain, AllMyColliders());
 
 		// If the left side has no hits, assume it's the right side.
 		int direction;
 		RaycastHit2D finalWallHit;
-		if (leftWallHit.collider)
+		
+		if (leftWallHit.collider && !rightWallHit.collider)
 		{
 			direction = -1;
 			finalWallHit = leftWallHit;
 		}
-		else
+		else if (!leftWallHit.collider && rightWallHit.collider)
 		{
 			direction = 1;
 			finalWallHit = rightWallHit;
 		}
-
-		if (!finalWallHit.collider)
+		else 
 		{
 			wallImAgainst = null;
 			return;
@@ -397,10 +402,13 @@ public class PlatformBody : StackBehavior
 			velocity = new Vector2(0, velocity.y);
 		
 		float xTranslation = 0;
-		float distToWall = finalWallHit.distance - capsuleCollider.size.x / 2;
-
-		xTranslation = distToWall < 0 ?
-			distToWall * direction : Mathf.Clamp(xTranslation, -distToWall, distToWall);
+		float distToWall = finalWallHit.distance - capsuleCollider.size.x/2;
+						
+		// If dist to wall is less than 0, we assume the collider is penetrating the wall
+		if (distToWall < 0)
+			xTranslation = distToWall * direction;
+		else
+			xTranslation = Mathf.Clamp(xTranslation, -distToWall, distToWall);
 		
 		transform.Translate(new Vector2(xTranslation, 0));
 	}

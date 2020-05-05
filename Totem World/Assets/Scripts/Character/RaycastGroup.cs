@@ -15,61 +15,75 @@ public class RaycastGroup
     public bool enabled = true;
 
     [HorizontalGroup("a"), LabelWidth(40), ToggleLeft]
-    public bool gizmos = true;
+    public bool debug;
+
+    [HorizontalGroup("a"), LabelWidth(40), ToggleLeft, SerializeField, ShowInInspector]
+    bool gizmos = true;
     
-    [HorizontalGroup("a"), LabelWidth(70)]
-    public int rayCount = 5;
+    [HorizontalGroup("b"), LabelWidth(70), SerializeField, ShowInInspector]
+    int rayCount = 5;
     
-    [HorizontalGroup("a"), LabelWidth(60)]
-    public float distance = .1f;
+    [HorizontalGroup("b"), LabelWidth(60), SerializeField, ShowInInspector]
+    float distance = .1f;
     
+    [HorizontalGroup("c"), LabelWidth(50), SerializeField, ShowInInspector]
+    Vector2 offset;
     
-    // TODO change to vec2
-    [HorizontalGroup("b"), LabelWidth(60)]
-    public float offset = .1f;
+    [HorizontalGroup("c"), LabelWidth(50), SerializeField, ShowInInspector]
+    Vector2 padding;
     
-    // TODO change to vec2
-    [HorizontalGroup("b"), LabelWidth(60)]
-    public float padding = .05f;
+    [HorizontalGroup("c"), LabelWidth(70), SerializeField, ShowInInspector]
+    Vector2 cornerPadding;
+
+    /// <summary>
+    /// Adds the offset and padding to the inputed position
+    /// </summary>
+    Vector2 ProcessedCastingPos(Vector2 inputPos)
+    {
+        return inputPos + offset + padding;
+    }
 
     public Vector2 CastingLeft(CapsuleCollider2D capsuleCollider)
     {
-        return capsuleCollider.Left() + (offset + padding) * (Vector2) capsuleCollider.transform.right;
+        return capsuleCollider.Left() + offset + padding;
     }
 
     public Vector2 CastingRight(CapsuleCollider2D capsuleCollider)
     {
-        return capsuleCollider.Right() + (offset - padding) * (Vector2) capsuleCollider.transform.right;
+        return capsuleCollider.Right() + offset - padding;
     }
 
     public Vector2 CastingTop(CapsuleCollider2D capsuleCollider)
     {
-        return capsuleCollider.Top() + (offset - padding) * (Vector2) capsuleCollider.transform.up;
+        return capsuleCollider.Top() + offset - padding;
     }
 
     public Vector2 CastingBottom(CapsuleCollider2D capsuleCollider)
     {
-        return capsuleCollider.Bottom() + (offset + padding) * (Vector2) capsuleCollider.transform.up;
+        return capsuleCollider.Bottom() + offset + padding;
     }
     
     public Vector2 CastingBottomLeft(CapsuleCollider2D capsuleCollider)
     {
-        return new Vector2(CastingLeft(capsuleCollider).x, CastingBottom(capsuleCollider).y);
+        return new Vector2(CastingLeft(capsuleCollider).x, CastingBottom(capsuleCollider).y) + cornerPadding;
     }
     
     public Vector2 CastingBottomRight(CapsuleCollider2D capsuleCollider)
     {
-        return new Vector2(CastingRight(capsuleCollider).x, CastingBottom(capsuleCollider).y);
+        return new Vector2(CastingRight(capsuleCollider).x, CastingBottom(capsuleCollider).y) +
+               Vector2.Scale(cornerPadding, new Vector2(-1, 1));
     }
     
     public Vector2 CastingTopLeft(CapsuleCollider2D capsuleCollider)
     {
-        return new Vector2(CastingLeft(capsuleCollider).x, CastingTop(capsuleCollider).y);
+        return new Vector2(CastingLeft(capsuleCollider).x, CastingTop(capsuleCollider).y) +
+               Vector2.Scale(cornerPadding, new Vector2(1, -1));
     }
     
     public Vector2 CastingTopRight(CapsuleCollider2D capsuleCollider)
     {
-        return new Vector2(CastingRight(capsuleCollider).x, CastingTop(capsuleCollider).y);
+        return new Vector2(CastingRight(capsuleCollider).x, CastingTop(capsuleCollider).y) +
+               Vector2.Scale(cornerPadding, new Vector2(-1, -1));
     }
 
     public void DrawCornerGizmos(CapsuleCollider2D collider)
@@ -136,7 +150,8 @@ public class RaycastGroup
             Vector2 finalDir = direction.normalized;
             Physics2D.RaycastNonAlloc(castPoint, finalDir, hits, additionalLength + distance, layerMask);
             
-            Debug.DrawRay(castPoint, finalDir, Color.cyan, 30);
+            if (debug)
+                Debug.DrawRay(castPoint, finalDir, Color.cyan, 5);
 
             List<RaycastHit2D> orderedHits = hits.Where(x => x.collider != null && !myColliders.Contains(x.collider)).ToList();
             

@@ -6,6 +6,7 @@ using UnityEngine.Events;
 public class StackableActor : PlatformBodyActor, IStackable
 {
 
+    public Vector2 popVelocity;
     public Vector2 topOffset = Vector2.up;
     [Tooltip("Where do I reside within the stack?")]
     public StackPosition stackPosition;
@@ -38,10 +39,6 @@ public class StackableActor : PlatformBodyActor, IStackable
             StackUpdate(belowMe);
 
         _prevPosition = transform.position;
-        
-        // Horizontal collision needs to happen last, so it's called here
-        if (_platformBody)
-            _platformBody.ProcessHorizontalCollision();
     }
 
     public Vector2 DeltaPosition()
@@ -51,11 +48,40 @@ public class StackableActor : PlatformBodyActor, IStackable
 
     public void StackUpdate(IStackable blockBelowMe)
     {
+        // at this point, the position will still be left over from the previous correct collision check
         if (blockBelowMe != null)
-            transform.position = blockBelowMe.Top() + StackOffset();
+        {
+            Vector2 gotoPos = blockBelowMe.Top() + StackOffset();
+            
+            // Make sure we wont pop through other colliders
+            float dist = Mathf.Abs(gotoPos.x - transform.position.x);
+            if (dist >= _platformBody._horizontalCollisionRayLength - .1f && _platformBody.IsAgainstWall())
+            {
+                PopOffStack();
+                return;
+            }
+            
+            transform.position = gotoPos;
+        }
         
         if (aboveMe != null) 
             aboveMe.StackUpdate(this);
+        
+        // Horizontal collision needs to happen last
+        if (_platformBody)
+            _platformBody.ProcessHorizontalCollision();
+    }
+
+    void PopOffStack()
+    {
+        Debug.Log("POP!");
+        belowMe.BreakAbove();
+        BreakBelow();
+        
+        if (_platformBody)
+        {
+            _platformBody.AddRelativeVelocity(popVelocity);
+        }
     }
 
     public Vector2 StackOffset()
@@ -78,6 +104,8 @@ public class StackableActor : PlatformBodyActor, IStackable
     
     void StackOnTo(IStackable under)
     {
+        Debug.Log(name + " is stacking on to " + under.MyGameObject().name);
+        
         belowMe = under;
         under.GetStacked(this);
         RecalculateStackPosition();
@@ -85,6 +113,9 @@ public class StackableActor : PlatformBodyActor, IStackable
         StackChanged();
     }
 
+    /// <summary>
+    /// Invokes the onStackChanged method. Calls StackChanged on all stackables above me
+    /// </summary>
     public void StackChanged()
     {
         if (aboveMe != null) 
@@ -122,6 +153,28 @@ public class StackableActor : PlatformBodyActor, IStackable
     public StackPosition MyStackPosition()
     {
         return stackPosition;
+    }
+
+    /// <summary>
+    /// I am now the top of a new stack, and whatever is above me snaps off and is its own stack now.
+    /// </summary>
+    public void BreakAbove()
+    {
+        aboveMe = null;
+        RecalculateStackPosition();
+        
+        // stack changed always propogates from the bottom
+        BottomOfStack().StackChanged();
+    }
+
+    /// <summary>
+    /// I am not the bottom of a new stack, and whatever is below me is its own stack now.
+    /// </summary>
+    public void BreakBelow()
+    {
+        belowMe = null;
+        RecalculateStackPosition();
+        StackChanged();
     }
 
     public List<IStackable> GetAllAbove()

@@ -19,6 +19,9 @@ public interface IStackable
 
     StackPosition MyStackPosition();
 
+    void BreakAbove();
+    void BreakBelow();
+
     List<IStackable> GetAllAbove();
     List<IStackable> GetAllBelow();
     List<IStackable> GetFullStack();

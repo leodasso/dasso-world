@@ -135,11 +135,23 @@ MonoBehaviour:
   middle: 1
   bottom: 1
   single: 1
+  popVelocity: {x: 0, y: 0}
   topOffset: {x: 0, y: 1.9}
   stackPosition: 0
   OnStackChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7123057853579272980}
+        m_MethodName: Reset
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!70 &7123057853579272978
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

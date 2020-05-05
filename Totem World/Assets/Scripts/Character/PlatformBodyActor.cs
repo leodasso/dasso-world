@@ -60,4 +60,9 @@ public class PlatformBodyActor : StackBehavior
 	{
 		
 	}
+
+	public virtual void Reset()
+	{
+		
+	}
 }

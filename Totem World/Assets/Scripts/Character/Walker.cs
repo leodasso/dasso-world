@@ -72,4 +72,10 @@ public class Walker : PlatformBodyActor, IControllable
 	public void AlphaReleased()
 	{
 	}
+
+	public override void Reset()
+	{
+		base.Reset();
+		walkInput = 0;
+	}
 }

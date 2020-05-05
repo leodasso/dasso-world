@@ -123,6 +123,7 @@ MonoBehaviour:
   bottom: 1
   single: 1
   capsuleCollider: {fileID: 8107497912034493679}
+  stackable: {fileID: 8679217461356828735}
   raycastSettings: {fileID: 11400000, guid: a1c3ab26b79982646b6b8d8563715ac6, type: 2}
   collisionSettings: {fileID: 11400000, guid: 5618cb07af3a6904994de41e00cb9ac8, type: 2}
   drag: 0.01
