@@ -62,39 +62,6 @@ public class RaycastGroup
     {
         return capsuleCollider.Bottom() + offset + padding;
     }
-    
-    public Vector2 CastingBottomLeft(CapsuleCollider2D capsuleCollider)
-    {
-        return new Vector2(CastingLeft(capsuleCollider).x, CastingBottom(capsuleCollider).y) + cornerPadding;
-    }
-    
-    public Vector2 CastingBottomRight(CapsuleCollider2D capsuleCollider)
-    {
-        return new Vector2(CastingRight(capsuleCollider).x, CastingBottom(capsuleCollider).y) +
-               Vector2.Scale(cornerPadding, new Vector2(-1, 1));
-    }
-    
-    public Vector2 CastingTopLeft(CapsuleCollider2D capsuleCollider)
-    {
-        return new Vector2(CastingLeft(capsuleCollider).x, CastingTop(capsuleCollider).y) +
-               Vector2.Scale(cornerPadding, new Vector2(1, -1));
-    }
-    
-    public Vector2 CastingTopRight(CapsuleCollider2D capsuleCollider)
-    {
-        return new Vector2(CastingRight(capsuleCollider).x, CastingTop(capsuleCollider).y) +
-               Vector2.Scale(cornerPadding, new Vector2(-1, -1));
-    }
-
-    public void DrawCornerGizmos(CapsuleCollider2D collider)
-    {
-        if (!enabled || !gizmos) return;
-        float radius = .1f;
-        Gizmos.DrawWireSphere(CastingTopLeft(collider), radius);
-        Gizmos.DrawWireSphere(CastingTopRight(collider), radius);
-        Gizmos.DrawWireSphere(CastingBottomLeft(collider), radius);
-        Gizmos.DrawWireSphere(CastingBottomRight(collider), radius);
-    }
 
     public void DrawGizmos(Color color, float additionalDistance, CastingDirection castingDirection, Vector2 castingVector, CapsuleCollider2D collider)
     {

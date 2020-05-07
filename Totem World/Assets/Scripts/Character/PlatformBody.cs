@@ -106,11 +106,8 @@ public class PlatformBody : StackBehavior
 	void OnDrawGizmos()
 	{
 		if (capsuleCollider == null) capsuleCollider = GetComponent<CapsuleCollider2D>();
-		
 		if (!raycastSettings) return;
 		
-		raycastSettings.horizontalCollisions.DrawCornerGizmos(capsuleCollider);
-
 		raycastSettings.verticalCollisions.DrawGizmos(Color.yellow, capsuleCollider.size.y/2, 
 			RaycastGroup.CastingDirection.Vertical, transform.up, capsuleCollider);
 		
