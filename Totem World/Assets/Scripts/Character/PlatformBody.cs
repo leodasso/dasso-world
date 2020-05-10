@@ -6,14 +6,13 @@ using Arachnid;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
+public enum FacingDirection
+{
+	Left, Right
+}
 
 public class PlatformBody : StackBehavior
 {
-	public enum FacingDirection
-	{
-		Left, Right
-	}
-	
 	[Tooltip("The dimensions of this capsule collider are used for collision.")]
 	public CapsuleCollider2D capsuleCollider;
 

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 369f1ae84c44bde40b237859e9fb16f4, type: 3}
+  m_Name: totem guy idle right
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: -2759917850242821779, guid: 4042d48daca118141a4347a320b8fecb, type: 3}
+  - {fileID: -8337017575941984981, guid: 4042d48daca118141a4347a320b8fecb, type: 3}
+  - {fileID: -8875364271321217661, guid: 4042d48daca118141a4347a320b8fecb, type: 3}
+  - {fileID: 7266655069802097101, guid: 4042d48daca118141a4347a320b8fecb, type: 3}
+  framerate: 12

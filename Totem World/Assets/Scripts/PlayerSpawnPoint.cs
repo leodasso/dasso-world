@@ -10,7 +10,7 @@ public class PlayerSpawnPoint : MonoBehaviour
 	public bool defaultSpawnPoint;
 
 	[EnumToggleButtons]
-	public PlatformBody.FacingDirection startingDirection;
+	public FacingDirection startingDirection;
 
 	public void Spawn()
 	{

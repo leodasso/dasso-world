@@ -29,8 +29,8 @@ public class Walker : PlatformBodyActor, IControllable
 		if (Mathf.Abs(walkInput) > 0.01f)
 		{
 			_platformBody.SetFacingDirection(walkInput > 0
-				? PlatformBody.FacingDirection.Right
-				: PlatformBody.FacingDirection.Left);
+				? FacingDirection.Right
+				: FacingDirection.Left);
 
 			if (disableFrictionWhenWalking)
 				_platformBody.frictionEnabled = false;
