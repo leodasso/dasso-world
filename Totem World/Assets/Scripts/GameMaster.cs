@@ -6,6 +6,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using CoroutineHelper = Arachnid.CoroutineHelper;
 
 [CreateAssetMenu(menuName = "Totem/Game Master")]
 public class GameMaster : ScriptableObject
@@ -82,7 +83,7 @@ public class GameMaster : ScriptableObject
     public static void LoadStage(Stage stage, float loadDelay)
     {        
         Get().currentStage = stage;
-        CoroutineHelper.NewCoroutine(Get().LoadNextStage(stage, loadDelay));
+        Arachnid.CoroutineHelper.NewCoroutine(Get().LoadNextStage(stage, loadDelay));
     }
     
 
@@ -96,7 +97,12 @@ public class GameMaster : ScriptableObject
 
     public void ReloadGame()
     {
-        CoroutineHelper.NewCoroutine(ReloadGame(2));
+        Arachnid.CoroutineHelper.NewCoroutine(ReloadGame(2));
+    }
+
+    public void CompleteStage()
+    {
+        Arachnid.CoroutineHelper.NewCoroutine(ReloadGame(2));
     }
     
     IEnumerator ReloadGame(float delay)
